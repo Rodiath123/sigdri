@@ -17,3 +17,7 @@ Route::post('/login', function () {
 Route::get('/declarations', function () {
     return view('declarations.index');
 })->name('declarations.index');
+
+Route::get('/unites', function () {
+    return view('unites.index');
+})->name('unites.index');
