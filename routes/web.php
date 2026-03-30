@@ -37,3 +37,8 @@ Route::get('/statistiques', function () {
 Route::get('/rapports', function () {
     return view('rapports.index');
 })->name('rapports.index');
+
+
+Route::get('/rapports', function () {
+    return view('parametrage.index');
+})->name('parametrage.index');
