@@ -33,3 +33,7 @@ Route::get('/produits', function () {
 Route::get('/statistiques', function () {
     return view('statistiques.index');
 })->name('statistiques.index');
+
+Route::get('/rapports', function () {
+    return view('rapports.index');
+})->name('rapports.index');
