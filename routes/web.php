@@ -21,3 +21,15 @@ Route::get('/declarations', function () {
 Route::get('/unites', function () {
     return view('unites.index');
 })->name('unites.index');
+
+Route::get('/utilisateurs', function () {
+    return view('utilisateurs.index');
+})->name('utilisateurs.index');
+
+Route::get('/produits', function () {
+    return view('produits.index');
+})->name('produits.index');
+
+Route::get('/statistiques', function () {
+    return view('statistiques.index');
+})->name('statistiques.index');
