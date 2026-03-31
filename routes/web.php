@@ -45,3 +45,7 @@ Route::get('/utilisateurs', function () {
 Route::get('/parametrage', function () {
     return view('parametrage.index');
 })->name('parametrage.index');
+
+Route::get('/profil', function () {
+    return view('profil');
+})->name('profil');
