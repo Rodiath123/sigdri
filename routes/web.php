@@ -42,3 +42,7 @@ Route::get('/rapports', function () {
 Route::get('/rapports', function () {
     return view('parametrage.index');
 })->name('parametrage.index');
+
+Route::get('/alertes', function () {
+    return view('alertes.index');
+})->name('alertes.index');
