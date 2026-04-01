@@ -91,8 +91,8 @@
                 <i class="bi bi-clock-history me-2" style="color: var(--secondary)"></i>
                 Dernières déclarations
             </h6>
-            <a href="#" class="btn btn-sm" style="background: var(--primary); color: white; border-radius: 8px;">
-                Voir tout
+            <a href="{{ route('declarations.index') }}" class="btn btn-sm" style="background: var(--primary); color: white; border-radius: 8px;">
+               Voir tout
             </a>
         </div>
         <div class="table-responsive">

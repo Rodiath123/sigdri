@@ -49,3 +49,7 @@ Route::get('/parametrage', function () {
 Route::get('/profil', function () {
     return view('profil');
 })->name('profil');
+
+Route::get('/declarations/{id}', function ($id) {
+    return view('declarations.show');
+})->name('declarations.show');

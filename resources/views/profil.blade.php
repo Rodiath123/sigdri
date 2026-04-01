@@ -66,7 +66,7 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Téléphone</label>
-                    <input type="text" class="form-control form-control-sm rounded-3" value="+229 97 00 00 00">
+                    <input type="text" class="form-control form-control-sm rounded-3" value="+229 01 97 00 00 00">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Rôle</label>
