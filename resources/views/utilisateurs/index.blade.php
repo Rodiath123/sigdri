@@ -64,7 +64,8 @@
             <div class="d-flex gap-2">
                 <input type="text" class="form-control form-control-sm rounded-3"
                        placeholder="🔍 Rechercher..." style="width:200px;">
-                <button class="btn btn-sm rounded-3" style="background:var(--secondary); color:white;">
+                <button class="btn btn-sm rounded-3" style="background:var(--secondary); color:white;"
+                        data-bs-toggle="modal" data-bs-target="#modalAjouter">
                     <i class="bi bi-plus-lg me-1"></i> Ajouter
                 </button>
             </div>
@@ -72,7 +73,7 @@
 
         <!-- Filtres rôles -->
         <div class="d-flex gap-2 mb-3">
-            <button class="btn btn-sm rounded-pill active"
+            <button class="btn btn-sm rounded-pill"
                     style="background:var(--primary); color:white; font-size:12px;">
                 Tous (128)
             </button>
@@ -156,17 +157,23 @@
                             <div class="d-flex gap-1">
                                 <button class="btn btn-sm rounded-2"
                                         style="background:#e0f0ff; color:var(--primary); font-size:12px;"
-                                        title="Voir profil">
+                                        title="Voir profil"
+                                        onclick="voirUser('{{ $u['nom'] }}', '{{ $u['email'] }}', '{{ $u['role'] }}', '{{ $u['unite'] }}', '{{ $u['statut'] }}')"
+                                        data-bs-toggle="modal" data-bs-target="#modalVoir">
                                     <i class="bi bi-eye"></i>
                                 </button>
                                 <button class="btn btn-sm rounded-2"
                                         style="background:#fef9c3; color:#854d0e; font-size:12px;"
-                                        title="Modifier">
+                                        title="Modifier"
+                                        onclick="modifierUser('{{ $u['nom'] }}', '{{ $u['email'] }}', '{{ $u['role'] }}', '{{ $u['unite'] }}')"
+                                        data-bs-toggle="modal" data-bs-target="#modalModifier">
                                     <i class="bi bi-pencil"></i>
                                 </button>
                                 <button class="btn btn-sm rounded-2"
                                         style="background:#fee2e2; color:#dc2626; font-size:12px;"
-                                        title="Supprimer">
+                                        title="Supprimer"
+                                        onclick="supprimerUser('{{ $u['nom'] }}')"
+                                        data-bs-toggle="modal" data-bs-target="#modalSupprimer">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
@@ -181,11 +188,11 @@
         <div class="d-flex justify-content-between align-items-center mt-3">
             <small class="text-muted">Affichage de 1 à 5 sur 128 utilisateurs</small>
             <nav>
-                <ul class="pagination pagination-sm mb-0">
+                <ul class="pagination pagination-sm mb-0" id="paginationUsers">
                     <li class="page-item disabled"><a class="page-link rounded-2" href="#">‹</a></li>
                     <li class="page-item active">
                         <a class="page-link rounded-2" href="#"
-                           style="background:var(--primary); border-color:var(--primary);">1</a>
+                           style="background:var(--primary); border-color:var(--primary); color:white;">1</a>
                     </li>
                     <li class="page-item"><a class="page-link rounded-2" href="#">2</a></li>
                     <li class="page-item"><a class="page-link rounded-2" href="#">3</a></li>
@@ -195,4 +202,228 @@
         </div>
     </div>
 
+    <!-- Modal Voir -->
+    <div class="modal fade" id="modalVoir" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="fw-bold" style="color:var(--primary)">
+                        <i class="bi bi-person me-2" style="color:var(--secondary)"></i>
+                        Profil utilisateur
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold mx-auto"
+                             style="width:60px; height:60px; background:var(--primary); color:white; font-size:24px;"
+                             id="voirAvatar"></div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label style="font-size:12px; color:gray;">NOM</label>
+                            <p class="fw-bold mb-0" id="voirNom" style="color:var(--primary)"></p>
+                        </div>
+                        <div class="col-6">
+                            <label style="font-size:12px; color:gray;">EMAIL</label>
+                            <p class="fw-bold mb-0" id="voirEmail" style="color:var(--primary)"></p>
+                        </div>
+                        <div class="col-6">
+                            <label style="font-size:12px; color:gray;">RÔLE</label>
+                            <p class="fw-bold mb-0" id="voirRole" style="color:var(--primary)"></p>
+                        </div>
+                        <div class="col-6">
+                            <label style="font-size:12px; color:gray;">UNITÉ</label>
+                            <p class="fw-bold mb-0" id="voirUnite" style="color:var(--primary)"></p>
+                        </div>
+                        <div class="col-6">
+                            <label style="font-size:12px; color:gray;">STATUT</label>
+                            <p class="fw-bold mb-0" id="voirStatut" style="color:var(--primary)"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-sm rounded-3"
+                            style="background:#f0f4f8; color:var(--primary);"
+                            data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Modifier -->
+    <div class="modal fade" id="modalModifier" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="fw-bold" style="color:var(--primary)">
+                        <i class="bi bi-pencil me-2" style="color:#854d0e"></i>
+                        Modifier l'utilisateur
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Nom complet</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" id="modNom">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Email</label>
+                            <input type="email" class="form-control form-control-sm rounded-3" id="modEmail">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Rôle</label>
+                            <select class="form-select form-select-sm rounded-3" id="modRole">
+                                <option>Admin</option>
+                                <option>Agent</option>
+                                <option>Industriel</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Unité / Service</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" id="modUnite">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-sm rounded-3"
+                            style="background:#f0f4f8; color:var(--primary);"
+                            data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-sm rounded-3 fw-semibold"
+                            style="background:var(--primary); color:white;">
+                        <i class="bi bi-save me-1"></i> Enregistrer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Supprimer -->
+    <div class="modal fade" id="modalSupprimer" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="fw-bold" style="color:#dc2626">
+                        <i class="bi bi-trash me-2"></i> Supprimer l'utilisateur
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="rounded-3 p-3" style="background:#fee2e2;">
+                        <p class="mb-0" style="font-size:13px; color:#dc2626;">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Voulez-vous vraiment supprimer l'utilisateur
+                            <strong id="suppNom"></strong> ? Cette action est irréversible.
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-sm rounded-3"
+                            style="background:#f0f4f8; color:var(--primary);"
+                            data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-sm rounded-3 fw-semibold"
+                            style="background:#dc2626; color:white;">
+                        <i class="bi bi-trash me-1"></i> Confirmer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajouter -->
+    <div class="modal fade" id="modalAjouter" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="fw-bold" style="color:var(--primary)">
+                        <i class="bi bi-person-plus me-2" style="color:var(--secondary)"></i>
+                        Ajouter un utilisateur
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Nom complet</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" placeholder="Prénom NOM">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Email</label>
+                            <input type="email" class="form-control form-control-sm rounded-3" placeholder="email@exemple.bj">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Rôle</label>
+                            <select class="form-select form-select-sm rounded-3">
+                                <option>Admin</option>
+                                <option>Agent</option>
+                                <option>Industriel</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Unité / Service</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" placeholder="Ex: SOBEBRA">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Mot de passe</label>
+                            <input type="password" class="form-control form-control-sm rounded-3" placeholder="••••••••">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-sm rounded-3"
+                            style="background:#f0f4f8; color:var(--primary);"
+                            data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-sm rounded-3 fw-semibold"
+                            style="background:var(--secondary); color:white;">
+                        <i class="bi bi-person-plus me-1"></i> Ajouter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
+
+@push('scripts')
+<script>
+    function voirUser(nom, email, role, unite, statut) {
+        document.getElementById('voirAvatar').textContent = nom.charAt(0).toUpperCase();
+        document.getElementById('voirNom').textContent = nom;
+        document.getElementById('voirEmail').textContent = email;
+        document.getElementById('voirRole').textContent = role;
+        document.getElementById('voirUnite').textContent = unite;
+        document.getElementById('voirStatut').textContent = statut;
+    }
+
+    function modifierUser(nom, email, role, unite) {
+        document.getElementById('modNom').value = nom;
+        document.getElementById('modEmail').value = email;
+        document.getElementById('modRole').value = role;
+        document.getElementById('modUnite').value = unite;
+    }
+
+    function supprimerUser(nom) {
+        document.getElementById('suppNom').textContent = nom;
+    }
+
+    // Pagination
+    document.querySelectorAll('#paginationUsers .page-link').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('#paginationUsers .page-item').forEach(function(item) {
+                item.classList.remove('active');
+                var l = item.querySelector('.page-link');
+                if(l) { l.style.background = ''; l.style.borderColor = ''; l.style.color = ''; }
+            });
+            var parent = this.closest('.page-item');
+            if(!parent.classList.contains('disabled')) {
+                parent.classList.add('active');
+                this.style.background = 'var(--primary)';
+                this.style.borderColor = 'var(--primary)';
+                this.style.color = 'white';
+            }
+        });
+    });
+</script>
+@endpush
