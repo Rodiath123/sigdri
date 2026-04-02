@@ -40,9 +40,10 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <button class="btn btn-sm w-100 rounded-3" style="background:var(--primary); color:white;">
-                    <i class="bi bi-funnel me-1"></i> Filtrer
-                </button>
+                <button class="btn btn-sm w-100 rounded-3" style="background:var(--primary); color:white;"
+                   onclick="filtrer()">
+                  <i class="bi bi-funnel me-1"></i> Filtrer
+                 </button>
             </div>
         </div>
     </div>
@@ -342,5 +343,24 @@
             }
         });
     });
+    function filtrer() {
+    var statut = document.querySelectorAll('select')[0].value;
+    var filiere = document.querySelectorAll('select')[1].value;
+    var dept = document.querySelectorAll('select')[2].value;
+
+    var rows = document.querySelectorAll('tbody tr');
+    rows.forEach(function(row) {
+        var cells = row.querySelectorAll('td');
+        var rowFiliere = cells[2].textContent.trim();
+        var rowDept = cells[3].textContent.trim();
+        var rowStatut = cells[6].textContent.trim();
+
+        var matchStatut = !statut || rowStatut.includes(statut);
+        var matchFiliere = !filiere || rowFiliere === filiere;
+        var matchDept = !dept || rowDept === dept;
+
+        row.style.display = (matchStatut && matchFiliere && matchDept) ? '' : 'none';
+    });
+}
 </script>
 @endpush
