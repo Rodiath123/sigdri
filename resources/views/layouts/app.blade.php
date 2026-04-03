@@ -26,14 +26,28 @@
 
         /* SIDEBAR */
         #sidebar {
-            width: 260px;
-            min-height: 100vh;
-            background: var(--primary);
-            position: fixed;
-            top: 0; left: 0;
-            z-index: 1000;
-            transition: all 0.3s;
-        }
+    width: 260px;
+    height: 100vh;
+    background: var(--primary);
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 1000;
+    transition: all 0.3s;
+    overflow-y: auto;
+}
+
+#sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+#sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+}
 
         #sidebar .logo {
             padding: 20px;

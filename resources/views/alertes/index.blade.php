@@ -117,12 +117,16 @@
                             <div class="d-flex gap-1">
                                 <button class="btn btn-sm rounded-2"
                                         style="background:#e0f0ff; color:var(--primary); font-size:12px;"
-                                        title="Voir détail">
+                                        title="Voir détail"
+                                        onclick="voirAlerte('{{ $a['matiere'] }}', '{{ $a['filiere'] }}', '{{ $a['dept'] }}', '{{ $a['industriel'] }}', '{{ $a['type'] }}', '{{ $a['date'] }}')"
+                                        data-bs-toggle="modal" data-bs-target="#modalVoir">
                                     <i class="bi bi-eye"></i>
                                 </button>
                                 <button class="btn btn-sm rounded-2"
                                         style="background:#dcfce7; color:#16a34a; font-size:12px;"
-                                        title="Marquer comme résolu">
+                                        title="Marquer comme résolu"
+                                        onclick="resoudreAlerte('{{ $a['matiere'] }}')"
+                                        data-bs-toggle="modal" data-bs-target="#modalResoudre">
                                     <i class="bi bi-check-lg"></i>
                                 </button>
                             </div>
@@ -137,11 +141,11 @@
         <div class="d-flex justify-content-between align-items-center mt-3">
             <small class="text-muted">Affichage de 1 à 6 sur 17 alertes</small>
             <nav>
-                <ul class="pagination pagination-sm mb-0">
+                <ul class="pagination pagination-sm mb-0" id="paginationAlertes">
                     <li class="page-item disabled"><a class="page-link rounded-2" href="#">‹</a></li>
                     <li class="page-item active">
                         <a class="page-link rounded-2" href="#"
-                           style="background:var(--primary); border-color:var(--primary);">1</a>
+                           style="background:var(--primary); border-color:var(--primary); color:white;">1</a>
                     </li>
                     <li class="page-item"><a class="page-link rounded-2" href="#">2</a></li>
                     <li class="page-item"><a class="page-link rounded-2" href="#">›</a></li>
@@ -150,4 +154,127 @@
         </div>
     </div>
 
+    <!-- Modal Voir -->
+    <div class="modal fade" id="modalVoir" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="fw-bold" style="color:var(--primary)">
+                        <i class="bi bi-bell me-2" style="color:var(--secondary)"></i>
+                        Détail de l'alerte
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label style="font-size:12px; color:gray;">MATIÈRE PREMIÈRE</label>
+                            <p class="fw-bold mb-0" id="voirMatiere" style="color:var(--primary)"></p>
+                        </div>
+                        <div class="col-6">
+                            <label style="font-size:12px; color:gray;">TYPE</label>
+                            <p class="fw-bold mb-0" id="voirType" style="color:var(--primary)"></p>
+                        </div>
+                        <div class="col-6">
+                            <label style="font-size:12px; color:gray;">FILIÈRE</label>
+                            <p class="fw-bold mb-0" id="voirFiliere" style="color:var(--primary)"></p>
+                        </div>
+                        <div class="col-6">
+                            <label style="font-size:12px; color:gray;">DÉPARTEMENT</label>
+                            <p class="fw-bold mb-0" id="voirDept" style="color:var(--primary)"></p>
+                        </div>
+                        <div class="col-6">
+                            <label style="font-size:12px; color:gray;">INDUSTRIEL</label>
+                            <p class="fw-bold mb-0" id="voirIndustriel" style="color:var(--primary)"></p>
+                        </div>
+                        <div class="col-6">
+                            <label style="font-size:12px; color:gray;">DATE</label>
+                            <p class="fw-bold mb-0" id="voirDate" style="color:var(--primary)"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-sm rounded-3"
+                            style="background:#f0f4f8; color:var(--primary);"
+                            data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Résoudre -->
+    <div class="modal fade" id="modalResoudre" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="fw-bold" style="color:#16a34a">
+                        <i class="bi bi-check-circle me-2"></i>
+                        Marquer comme résolu
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="rounded-3 p-3 mb-3" style="background:#dcfce7;">
+                        <p class="mb-0" style="font-size:13px; color:#16a34a;">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Marquer l'alerte sur <strong id="resoudreNom"></strong> comme résolue ?
+                        </p>
+                    </div>
+                    <div>
+                        <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">
+                            Note de résolution (optionnel)
+                        </label>
+                        <textarea class="form-control rounded-3" rows="3"
+                                  placeholder="Décrire comment le problème a été résolu..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-sm rounded-3"
+                            style="background:#f0f4f8; color:var(--primary);"
+                            data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-sm rounded-3 fw-semibold"
+                            style="background:#16a34a; color:white;">
+                        <i class="bi bi-check-lg me-1"></i> Confirmer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
+
+@push('scripts')
+<script>
+    function voirAlerte(matiere, filiere, dept, industriel, type, date) {
+        document.getElementById('voirMatiere').textContent = matiere;
+        document.getElementById('voirFiliere').textContent = filiere;
+        document.getElementById('voirDept').textContent = dept;
+        document.getElementById('voirIndustriel').textContent = industriel;
+        document.getElementById('voirType').textContent = type;
+        document.getElementById('voirDate').textContent = date;
+    }
+
+    function resoudreAlerte(nom) {
+        document.getElementById('resoudreNom').textContent = nom;
+    }
+
+    // Pagination
+    document.querySelectorAll('#paginationAlertes .page-link').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelectorAll('#paginationAlertes .page-item').forEach(function(item) {
+                item.classList.remove('active');
+                var l = item.querySelector('.page-link');
+                if(l) { l.style.background = ''; l.style.borderColor = ''; l.style.color = ''; }
+            });
+            var parent = this.closest('.page-item');
+            if(!parent.classList.contains('disabled')) {
+                parent.classList.add('active');
+                this.style.background = 'var(--primary)';
+                this.style.borderColor = 'var(--primary)';
+                this.style.color = 'white';
+            }
+        });
+    });
+</script>
+@endpush
