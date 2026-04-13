@@ -30,7 +30,8 @@
                     <i class="bi bi-diagram-3 me-2" style="color:var(--secondary)"></i>
                     Gestion des filières
                 </h6>
-                <button class="btn btn-sm rounded-3" style="background:var(--secondary); color:white;">
+                <button class="btn btn-sm rounded-3" style="background:var(--secondary); color:white;"
+                        data-bs-toggle="modal" data-bs-target="#modalAjouterFiliere">
                     <i class="bi bi-plus-lg me-1"></i> Ajouter
                 </button>
             </div>
@@ -79,11 +80,15 @@
                             <td>
                                 <div class="d-flex gap-1">
                                     <button class="btn btn-sm rounded-2"
-                                            style="background:#fef9c3; color:#854d0e; font-size:12px;">
+                                            style="background:#fef9c3; color:#854d0e; font-size:12px;"
+                                            onclick="modifierFiliere('{{ $f['nom'] }}', '{{ $f['code'] }}', '{{ $f['statut'] }}')"
+                                            data-bs-toggle="modal" data-bs-target="#modalModifierFiliere">
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <button class="btn btn-sm rounded-2"
-                                            style="background:#fee2e2; color:#dc2626; font-size:12px;">
+                                            style="background:#fee2e2; color:#dc2626; font-size:12px;"
+                                            onclick="supprimerFiliere('{{ $f['nom'] }}')"
+                                            data-bs-toggle="modal" data-bs-target="#modalSupprimerFiliere">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -104,7 +109,8 @@
                     <i class="bi bi-geo-alt me-2" style="color:var(--secondary)"></i>
                     Gestion des départements
                 </h6>
-                <button class="btn btn-sm rounded-3" style="background:var(--secondary); color:white;">
+                <button class="btn btn-sm rounded-3" style="background:var(--secondary); color:white;"
+                        data-bs-toggle="modal" data-bs-target="#modalAjouterDept">
                     <i class="bi bi-plus-lg me-1"></i> Ajouter
                 </button>
             </div>
@@ -141,11 +147,15 @@
                             <td>
                                 <div class="d-flex gap-1">
                                     <button class="btn btn-sm rounded-2"
-                                            style="background:#fef9c3; color:#854d0e; font-size:12px;">
+                                            style="background:#fef9c3; color:#854d0e; font-size:12px;"
+                                            onclick="modifierDept('{{ $d['nom'] }}', '{{ $d['chef'] }}')"
+                                            data-bs-toggle="modal" data-bs-target="#modalModifierDept">
                                         <i class="bi bi-pencil"></i>
                                     </button>
                                     <button class="btn btn-sm rounded-2"
-                                            style="background:#fee2e2; color:#dc2626; font-size:12px;">
+                                            style="background:#fee2e2; color:#dc2626; font-size:12px;"
+                                            onclick="supprimerDept('{{ $d['nom'] }}')"
+                                            data-bs-toggle="modal" data-bs-target="#modalSupprimerDept">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -165,7 +175,6 @@
                 <i class="bi bi-gear me-2" style="color:var(--secondary)"></i>
                 Paramètres système
             </h6>
-
             <div class="row g-4">
                 <div class="col-md-6">
                     <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">
@@ -205,6 +214,228 @@
         </div>
     </div>
 
+    <!-- Modal Ajouter Filière -->
+    <div class="modal fade" id="modalAjouterFiliere" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="fw-bold" style="color:var(--primary)">
+                        <i class="bi bi-plus-circle me-2" style="color:var(--secondary)"></i>
+                        Ajouter une filière
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Nom</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" placeholder="Ex: Chimie">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Code</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" placeholder="Ex: CHM">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Statut</label>
+                            <select class="form-select form-select-sm rounded-3">
+                                <option>Active</option>
+                                <option>Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-sm rounded-3"
+                            style="background:#f0f4f8; color:var(--primary);"
+                            data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-sm rounded-3 fw-semibold"
+                            style="background:var(--secondary); color:white;">
+                        <i class="bi bi-plus-lg me-1"></i> Ajouter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Modifier Filière -->
+    <div class="modal fade" id="modalModifierFiliere" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="fw-bold" style="color:var(--primary)">
+                        <i class="bi bi-pencil me-2" style="color:#854d0e"></i>
+                        Modifier la filière
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Nom</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" id="modFilNom">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Code</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" id="modFilCode">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Statut</label>
+                            <select class="form-select form-select-sm rounded-3" id="modFilStatut">
+                                <option>Active</option>
+                                <option>Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-sm rounded-3"
+                            style="background:#f0f4f8; color:var(--primary);"
+                            data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-sm rounded-3 fw-semibold"
+                            style="background:var(--primary); color:white;">
+                        <i class="bi bi-save me-1"></i> Enregistrer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Supprimer Filière -->
+    <div class="modal fade" id="modalSupprimerFiliere" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="fw-bold" style="color:#dc2626">
+                        <i class="bi bi-trash me-2"></i> Supprimer la filière
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="rounded-3 p-3" style="background:#fee2e2;">
+                        <p class="mb-0" style="font-size:13px; color:#dc2626;">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Voulez-vous vraiment supprimer la filière
+                            <strong id="suppFilNom"></strong> ?
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-sm rounded-3"
+                            style="background:#f0f4f8; color:var(--primary);"
+                            data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-sm rounded-3 fw-semibold"
+                            style="background:#dc2626; color:white;">
+                        <i class="bi bi-trash me-1"></i> Confirmer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajouter Département -->
+    <div class="modal fade" id="modalAjouterDept" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="fw-bold" style="color:var(--primary)">
+                        <i class="bi bi-plus-circle me-2" style="color:var(--secondary)"></i>
+                        Ajouter un département
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Nom</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" placeholder="Ex: Mono">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Chef-lieu</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" placeholder="Ex: Lokossa">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-sm rounded-3"
+                            style="background:#f0f4f8; color:var(--primary);"
+                            data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-sm rounded-3 fw-semibold"
+                            style="background:var(--secondary); color:white;">
+                        <i class="bi bi-plus-lg me-1"></i> Ajouter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Modifier Département -->
+    <div class="modal fade" id="modalModifierDept" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="fw-bold" style="color:var(--primary)">
+                        <i class="bi bi-pencil me-2" style="color:#854d0e"></i>
+                        Modifier le département
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Nom</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" id="modDeptNom">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Chef-lieu</label>
+                            <input type="text" class="form-control form-control-sm rounded-3" id="modDeptChef">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-sm rounded-3"
+                            style="background:#f0f4f8; color:var(--primary);"
+                            data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-sm rounded-3 fw-semibold"
+                            style="background:var(--primary); color:white;">
+                        <i class="bi bi-save me-1"></i> Enregistrer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Supprimer Département -->
+    <div class="modal fade" id="modalSupprimerDept" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h6 class="fw-bold" style="color:#dc2626">
+                        <i class="bi bi-trash me-2"></i> Supprimer le département
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="rounded-3 p-3" style="background:#fee2e2;">
+                        <p class="mb-0" style="font-size:13px; color:#dc2626;">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Voulez-vous vraiment supprimer le département
+                            <strong id="suppDeptNom"></strong> ?
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-sm rounded-3"
+                            style="background:#f0f4f8; color:var(--primary);"
+                            data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-sm rounded-3 fw-semibold"
+                            style="background:#dc2626; color:white;">
+                        <i class="bi bi-trash me-1"></i> Confirmer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @push('scripts')
@@ -223,5 +454,26 @@
             this.style.color = 'white';
         };
     });
+
+    // Filières
+    function modifierFiliere(nom, code, statut) {
+        document.getElementById('modFilNom').value = nom;
+        document.getElementById('modFilCode').value = code;
+        document.getElementById('modFilStatut').value = statut;
+    }
+
+    function supprimerFiliere(nom) {
+        document.getElementById('suppFilNom').textContent = nom;
+    }
+
+    // Départements
+    function modifierDept(nom, chef) {
+        document.getElementById('modDeptNom').value = nom;
+        document.getElementById('modDeptChef').value = chef;
+    }
+
+    function supprimerDept(nom) {
+        document.getElementById('suppDeptNom').textContent = nom;
+    }
 </script>
 @endpush
