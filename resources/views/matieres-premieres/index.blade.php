@@ -22,17 +22,17 @@
     </div>
 </div>
 
-<!-- Contenu Produits -->
+<!-- Contenu Matières premières -->
 @php
-    use App\Models\Produit;
-    $produits = Produit::orderBy('nom')->get();
+    use App\Models\MatierePremiere;
+    $matieres = MatierePremiere::orderBy('nom')->get();
 @endphp
 
 <div class="card p-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h6 class="fw-bold mb-0" style="color:var(--primary)">
-            <i class="bi bi-box-seam me-2" style="color:var(--secondary)"></i>
-            Liste des produits
+            <i class="bi bi-droplet me-2" style="color:var(--secondary)"></i>
+            Liste des matières premières
         </h6>
         <button class="btn btn-sm rounded-3" style="background:var(--secondary); color:white;"
                 data-bs-toggle="modal" data-bs-target="#modalAjouter">
@@ -45,22 +45,28 @@
             <thead style="background:#f0f4f8;">
                 <tr>
                     <th style="font-size:13px;">#</th>
-                    <th style="font-size:13px;">Nom du produit</th>
-                    <th style="font-size:13px;">Unité</th>
+                    <th style="font-size:13px;">Nom</th>
+                    <th style="font-size:13px;">Origine</th>
                     <th style="font-size:13px;">Filière</th>
                     <th style="font-size:13px;">Statut</th>
                     <th style="font-size:13px;">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($produits as $p)
+                @foreach($matieres as $m)
                 <tr>
-                    <td style="font-size:13px; color:gray;">#{{ $p->id }}</td>
-                    <td class="fw-semibold" style="font-size:14px;">{{ $p->nom }}</td>
-                    <td style="font-size:13px;">{{ $p->unite }}</td>
-                    <td style="font-size:13px;">{{ $p->filiere }}</td>
+                    <td style="font-size:13px; color:gray;">#{{ $m->id }}</td>
+                    <td class="fw-semibold" style="font-size:14px;">{{ $m->nom }}</td>
                     <td>
-                        @if($p->est_actif)
+                        @if($m->origine === 'locale')
+                            <span class="badge rounded-pill" style="background:#dcfce7; color:#16a34a;">Locale</span>
+                        @else
+                            <span class="badge rounded-pill" style="background:#e0f0ff; color:var(--primary);">Importée</span>
+                        @endif
+                    </td>
+                    <td style="font-size:13px;">{{ $m->filiere }}</td>
+                    <td>
+                        @if($m->est_actif)
                             <span class="badge rounded-pill bg-success">● Actif</span>
                         @else
                             <span class="badge rounded-pill bg-secondary">● Inactif</span>
@@ -69,14 +75,14 @@
                     <td>
                         <div class="d-flex gap-1">
                             <button class="btn btn-sm rounded-2" style="background:#e0f0ff; color:var(--primary);"
-                                    onclick='voirProduit(@json($p))' data-bs-toggle="modal" data-bs-target="#modalVoir">
+                                    onclick='voirMatiere(@json($m))' data-bs-toggle="modal" data-bs-target="#modalVoir">
                                 <i class="bi bi-eye"></i>
                             </button>
                             <button class="btn btn-sm rounded-2" style="background:#fef9c3; color:#854d0e;"
-                                    onclick='modifierProduit(@json($p))' data-bs-toggle="modal" data-bs-target="#modalModifier">
+                                    onclick='modifierMatiere(@json($m))' data-bs-toggle="modal" data-bs-target="#modalModifier">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <form method="POST" action="{{ route('produits.toggle', $p->id) }}" class="d-inline">
+                            <form method="POST" action="{{ route('matieres-premieres.toggle', $m->id) }}" class="d-inline">
                                 @csrf
                                 @method('PATCH')
                                 <button type="submit" class="btn btn-sm rounded-2" style="background:#f0f4f8; color:gray;">
@@ -95,25 +101,28 @@
 <!-- Modal Ajouter -->
 <div class="modal fade" id="modalAjouter" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <form method="POST" action="{{ route('produits.store') }}">
+        <form method="POST" action="{{ route('matieres-premieres.store') }}">
             @csrf
             <div class="modal-content border-0 rounded-4">
                 <div class="modal-header border-0 pb-0">
                     <h6 class="fw-bold" style="color:var(--primary)">
                         <i class="bi bi-plus-circle me-2" style="color:var(--secondary)"></i>
-                        Ajouter un produit
+                        Ajouter une matière première
                     </h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Nom du produit</label>
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Nom</label>
                             <input type="text" class="form-control form-control-sm rounded-3" name="nom" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Unité</label>
-                            <input type="text" class="form-control form-control-sm rounded-3" name="unite" placeholder="Ex: Tonne, Litre, Unité" required>
+                            <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Origine</label>
+                            <select class="form-select form-select-sm rounded-3" name="origine" required>
+                                <option value="locale">Locale</option>
+                                <option value="importee">Importée</option>
+                            </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Filière</label>
@@ -137,12 +146,12 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 rounded-4">
             <div class="modal-header border-0 pb-0">
-                <h6 class="fw-bold" style="color:var(--primary)">Détail du produit</h6>
+                <h6 class="fw-bold" style="color:var(--primary)">Détail de la matière première</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <p><strong>Nom:</strong> <span id="voirNom"></span></p>
-                <p><strong>Unité:</strong> <span id="voirUnite"></span></p>
+                <p><strong>Origine:</strong> <span id="voirOrigine"></span></p>
                 <p><strong>Filière:</strong> <span id="voirFiliere"></span></p>
             </div>
         </div>
@@ -157,7 +166,7 @@
             @method('PUT')
             <div class="modal-content border-0 rounded-4">
                 <div class="modal-header border-0 pb-0">
-                    <h6 class="fw-bold" style="color:var(--primary)">Modifier le produit</h6>
+                    <h6 class="fw-bold" style="color:var(--primary)">Modifier la matière première</h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -166,8 +175,11 @@
                         <input type="text" class="form-control form-control-sm" name="nom" id="modNom" required>
                     </div>
                     <div class="mb-2">
-                        <label>Unité</label>
-                        <input type="text" class="form-control form-control-sm" name="unite" id="modUnite" required>
+                        <label>Origine</label>
+                        <select class="form-select form-select-sm" name="origine" id="modOrigine" required>
+                            <option value="locale">Locale</option>
+                            <option value="importee">Importée</option>
+                        </select>
                     </div>
                     <div class="mb-2">
                         <label>Filière</label>
@@ -186,15 +198,15 @@
 
 @push('scripts')
 <script>
-    function voirProduit(data) {
+    function voirMatiere(data) {
         document.getElementById('voirNom').textContent = data.nom;
-        document.getElementById('voirUnite').textContent = data.unite;
+        document.getElementById('voirOrigine').textContent = data.origine === 'locale' ? 'Locale' : 'Importée';
         document.getElementById('voirFiliere').textContent = data.filiere;
     }
-    function modifierProduit(data) {
-        document.getElementById('formModifier').action = '/produits/' + data.id;
+    function modifierMatiere(data) {
+        document.getElementById('formModifier').action = '/matieres-premieres/' + data.id;
         document.getElementById('modNom').value = data.nom;
-        document.getElementById('modUnite').value = data.unite;
+        document.getElementById('modOrigine').value = data.origine;
         document.getElementById('modFiliere').value = data.filiere;
     }
 </script>

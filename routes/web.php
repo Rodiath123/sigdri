@@ -1,55 +1,63 @@
 <?php
 
+use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\ProfileController;
+use App\Http\Controllers\Web\StatistiqueController;
+use App\Http\Controllers\Web\RapportController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('dashboard');
-})->name('dashboard');
+// Routes d'authentification
+Auth::routes();
 
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
+// Routes protégées
+Route::middleware(['auth'])->group(function () {
 
-Route::post('/login', function () {
-    // logique de connexion à faire avec Rodiath
-})->name('login.post');
+    // Dashboard
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::get('/declarations', function () {
-    return view('declarations.index');
-})->name('declarations.index');
+    // Unités Industrielles
+    Route::resource('unites', \App\Http\Controllers\UniteIndustrielleController::class);
+    Route::patch('/unites/{id}/toggle', [\App\Http\Controllers\UniteIndustrielleController::class, 'toggle'])->name('unites.toggle');
 
-Route::get('/unites', function () {
-    return view('unites.index');
-})->name('unites.index');
+    // Produits
+    Route::resource('produits', \App\Http\Controllers\ProduitController::class);
+    Route::patch('/produits/{id}/toggle', [\App\Http\Controllers\ProduitController::class, 'toggle'])->name('produits.toggle');
 
-Route::get('/produits', function () {
-    return view('produits.index');
-})->name('produits.index');
+    // Matières Premières
+    Route::resource('matieres-premieres', \App\Http\Controllers\MatierePremiereController::class);
+    Route::patch('/matieres-premieres/{id}/toggle', [\App\Http\Controllers\MatierePremiereController::class, 'toggle'])->name('matieres-premieres.toggle');
 
-Route::get('/statistiques', function () {
-    return view('statistiques.index');
-})->name('statistiques.index');
+    // Utilisateurs
+    Route::resource('utilisateurs', \App\Http\Controllers\UserController::class);
+    Route::patch('/utilisateurs/{id}/toggle', [\App\Http\Controllers\UserController::class, 'toggle'])->name('utilisateurs.toggle');
 
-Route::get('/rapports', function () {
-    return view('rapports.index');
-})->name('rapports.index');
+    // Déclarations
+    Route::get('/declarations', [\App\Http\Controllers\DeclarationController::class, 'indexWeb'])->name('declarations.index');
+    Route::get('/declarations/{id}', [\App\Http\Controllers\DeclarationController::class, 'showWeb'])->name('declarations.show');
+    Route::patch('/declarations/{id}/valider', [\App\Http\Controllers\DeclarationController::class, 'validerWeb'])->name('declarations.valider');
+    Route::patch('/declarations/{id}/rejeter', [\App\Http\Controllers\DeclarationController::class, 'rejeterWeb'])->name('declarations.rejeter');
 
-Route::get('/alertes', function () {
-    return view('alertes.index');
-})->name('alertes.index');
+    // Alertes
+    Route::get('/alertes', [\App\Http\Controllers\AlerteMPController::class, 'indexWeb'])->name('alertes.index');
+    Route::patch('/alertes/{id}/traiter', [\App\Http\Controllers\AlerteMPController::class, 'traiterWeb'])->name('alertes.traiter');
 
-Route::get('/utilisateurs', function () {
-    return view('utilisateurs.index');
-})->name('utilisateurs.index');
+    // Statistiques
+    Route::get('/statistiques', [StatistiqueController::class, 'index'])->name('statistiques.index');
+    Route::get('/statistiques/data', [StatistiqueController::class, 'getData'])->name('statistiques.data');
 
-Route::get('/parametrage', function () {
-    return view('parametrage.index');
-})->name('parametrage.index');
+    // Rapports (version corrigée - sans doublons)
+    Route::get('/rapports', [RapportController::class, 'index'])->name('rapports.index');
+    Route::post('/rapports/generate-pdf', [RapportController::class, 'generatePDF'])->name('rapports.pdf');
+    Route::post('/rapports/generate-excel', [RapportController::class, 'generateExcel'])->name('rapports.excel');
 
-Route::get('/profil', function () {
-    return view('profil');
-})->name('profil');
+    // Profil
+    Route::get('/profil', [ProfileController::class, 'index'])->name('profil.index');
+    Route::put('/profil', [ProfileController::class, 'update'])->name('profil.update');
 
-Route::get('/declarations/{id}', function ($id) {
-    return view('declarations.show');
-})->name('declarations.show');
+    // Parametrage
+    Route::get('/parametrage', [App\Http\Controllers\Web\ParametrageController::class, 'index'])->name('parametrage.index');
+});
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

@@ -6,175 +6,193 @@
 
 @section('content')
 
-    <!-- Cartes statistiques -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="stat-card blue">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="mb-1" style="font-size:13px; opacity:0.8">Déclarations reçues</p>
-                        <h3 class="fw-bold mb-0">1 248</h3>
-                        <small style="opacity:0.7">Ce trimestre</small>
-                    </div>
-                    <i class="bi bi-file-earmark-text" style="font-size: 2.5rem; opacity:0.4"></i>
-                </div>
-            </div>
-        </div>
+@php
+    use App\Models\Declaration;
+    use App\Models\UniteIndustrielle;
+    use App\Models\AlerteMP;
+    
+    // Statistiques réelles
+    $totalDeclarations = Declaration::count();
+    $totalUnites = UniteIndustrielle::count();
+    $totalAlertes = AlerteMP::where('est_traitee', false)->count();
+    $totalRapports = 0; // À calculer si vous avez une table de rapports
+    
+    // Dernières déclarations
+    $dernieresDeclarations = Declaration::with('uniteIndustrielle')
+        ->orderBy('created_at', 'desc')
+        ->limit(5)
+        ->get();
+    
+    // Alertes par statut pour le graphique
+    $alertesDisponible = AlerteMP::where('statut', 'disponible')->count();
+    $alertesTension = AlerteMP::where('statut', 'tension')->count();
+    $alertesRupture = AlerteMP::where('statut', 'rupture')->count();
+    
+    // Production par filière (exemple avec les unités)
+    $filieres = UniteIndustrielle::select('filiere')
+        ->whereNotNull('filiere')
+        ->distinct()
+        ->pluck('filiere')
+        ->toArray();
+    
+    // Données pour le graphique (à adapter selon votre structure)
+    $productionData = [];
+    foreach($filieres as $filiere) {
+        $productionData[] = UniteIndustrielle::where('filiere', $filiere)->count();
+    }
+@endphp
 
-        <div class="col-md-3">
-            <div class="stat-card orange">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="mb-1" style="font-size:13px; opacity:0.8">Unités industrielles</p>
-                        <h3 class="fw-bold mb-0">342</h3>
-                        <small style="opacity:0.7">Enregistrées</small>
-                    </div>
-                    <i class="bi bi-buildings" style="font-size: 2.5rem; opacity:0.4"></i>
+<!-- Cartes statistiques -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card blue">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="mb-1" style="font-size:13px; opacity:0.8">Déclarations reçues</p>
+                    <h3 class="fw-bold mb-0">{{ $totalDeclarations }}</h3>
+                    <small style="opacity:0.7">Total général</small>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="stat-card pink">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="mb-1" style="font-size:13px; opacity:0.8">Alertes matières</p>
-                        <h3 class="fw-bold mb-0">17</h3>
-                        <small style="opacity:0.7">Tension / Rupture</small>
-                    </div>
-                    <i class="bi bi-exclamation-triangle" style="font-size: 2.5rem; opacity:0.4"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="stat-card dark">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="mb-1" style="font-size:13px; opacity:0.8">Rapports générés</p>
-                        <h3 class="fw-bold mb-0">89</h3>
-                        <small style="opacity:0.7">Ce mois</small>
-                    </div>
-                    <i class="bi bi-file-earmark-pdf" style="font-size: 2.5rem; opacity:0.4"></i>
-                </div>
+                <i class="bi bi-file-earmark-text" style="font-size: 2.5rem; opacity:0.4"></i>
             </div>
         </div>
     </div>
 
-    <!-- Graphiques -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-8">
-            <div class="card p-4">
-                <h6 class="fw-bold mb-3" style="color: var(--primary)">
-                    <i class="bi bi-bar-chart me-2" style="color: var(--secondary)"></i>
-                    Production par filière (12 derniers mois)
-                </h6>
-                <canvas id="productionChart" height="120"></canvas>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card p-4">
-                <h6 class="fw-bold mb-3" style="color: var(--primary)">
-                    <i class="bi bi-pie-chart me-2" style="color: var(--accent)"></i>
-                    Matières premières
-                </h6>
-                <canvas id="matiereChart" height="200"></canvas>
+    <div class="col-md-3">
+        <div class="stat-card orange">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="mb-1" style="font-size:13px; opacity:0.8">Unités industrielles</p>
+                    <h3 class="fw-bold mb-0">{{ $totalUnites }}</h3>
+                    <small style="opacity:0.7">Enregistrées</small>
+                </div>
+                <i class="bi bi-buildings" style="font-size: 2.5rem; opacity:0.4"></i>
             </div>
         </div>
     </div>
 
-    <!-- Dernières déclarations -->
-    <div class="card p-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="fw-bold mb-0" style="color: var(--primary)">
-                <i class="bi bi-clock-history me-2" style="color: var(--secondary)"></i>
-                Dernières déclarations
+    <div class="col-md-3">
+        <div class="stat-card pink">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="mb-1" style="font-size:13px; opacity:0.8">Alertes actives</p>
+                    <h3 class="fw-bold mb-0">{{ $totalAlertes }}</h3>
+                    <small style="opacity:0.7">Tension / Rupture</small>
+                </div>
+                <i class="bi bi-exclamation-triangle" style="font-size: 2.5rem; opacity:0.4"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="stat-card dark">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="mb-1" style="font-size:13px; opacity:0.8">Départements</p>
+                    <h3 class="fw-bold mb-0">{{ $unitesParDept = UniteIndustrielle::distinct('departement')->count('departement') }}</h3>
+                    <small style="opacity:0.7">Couverts</small>
+                </div>
+                <i class="bi bi-geo-alt" style="font-size: 2.5rem; opacity:0.4"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Graphiques -->
+<div class="row g-4 mb-4">
+    <div class="col-md-8">
+        <div class="card p-4">
+            <h6 class="fw-bold mb-3" style="color: var(--primary)">
+                <i class="bi bi-bar-chart me-2" style="color: var(--secondary)"></i>
+                Unités par filière
             </h6>
-            <a href="{{ route('declarations.index') }}" class="btn btn-sm" style="background: var(--primary); color: white; border-radius: 8px;">
-               Voir tout
-            </a>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead style="background: #f0f4f8;">
-                    <tr>
-                        <th>Industriel</th>
-                        <th>Filière</th>
-                        <th>Département</th>
-                        <th>Date</th>
-                        <th>Statut</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>SOBEBRA</strong></td>
-                        <td>Agro-alimentaire</td>
-                        <td>Littoral</td>
-                        <td>25/03/2025</td>
-                        <td><span class="badge bg-success">Validée</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>COTONOU TEXTILE</strong></td>
-                        <td>Textile</td>
-                        <td>Atlantique</td>
-                        <td>24/03/2025</td>
-                        <td><span class="badge bg-warning text-dark">En attente</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>BÉNIN CIMENT</strong></td>
-                        <td>BTP</td>
-                        <td>Ouémé</td>
-                        <td>23/03/2025</td>
-                        <td><span class="badge bg-danger">Rejetée</span></td>
-                    </tr>
-                    <tr>
-                        <td><strong>AGRO BÉNIN</strong></td>
-                        <td>Agriculture</td>
-                        <td>Zou</td>
-                        <td>22/03/2025</td>
-                        <td><span class="badge bg-success">Validée</span></td>
-                    </tr>
-                </tbody>
-            </table>
+            <canvas id="productionChart" height="120"></canvas>
         </div>
     </div>
+
+    <div class="col-md-4">
+        <div class="card p-4">
+            <h6 class="fw-bold mb-3" style="color: var(--primary)">
+                <i class="bi bi-pie-chart me-2" style="color: var(--accent)"></i>
+                État des matières premières
+            </h6>
+            <canvas id="matiereChart" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Dernières déclarations -->
+<div class="card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="fw-bold mb-0" style="color: var(--primary)">
+            <i class="bi bi-clock-history me-2" style="color: var(--secondary)"></i>
+            Dernières déclarations
+        </h6>
+        <a href="{{ route('declarations.index') }}" class="btn btn-sm" style="background: var(--primary); color: white; border-radius: 8px;">
+            Voir tout
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead style="background: #f0f4f8;">
+                <tr>
+                    <th>Industriel</th>
+                    <th>Filière</th>
+                    <th>Département</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($dernieresDeclarations as $d)
+                <tr>
+                    <td><strong>{{ $d->uniteIndustrielle->nom ?? 'N/A' }}</strong></td>
+                    <td>{{ $d->uniteIndustrielle->filiere ?? 'N/A' }}</td>
+                    <td>{{ $d->uniteIndustrielle->departement ?? 'N/A' }}</td>
+                    <td>{{ $d->created_at->format('d/m/Y') }}</td>
+                    <td>
+                        @if($d->statut === 'validee')
+                            <span class="badge bg-success">Validée</span>
+                        @elseif($d->statut === 'en_attente')
+                            <span class="badge bg-warning text-dark">En attente</span>
+                        @else
+                            <span class="badge bg-danger">Rejetée</span>
+                        @endif
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="text-center">Aucune déclaration pour le moment</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 
 @endsection
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Graphique barres - Production
+    // Graphique barres - Unités par filière
+    const filieres = @json($filieres);
+    const productionData = @json($productionData);
+    
     new Chart(document.getElementById('productionChart'), {
         type: 'bar',
         data: {
-            labels: ['Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc', 'Jan', 'Fév', 'Mar'],
-            datasets: [
-                {
-                    label: 'Agro-alimentaire',
-                    data: [120, 135, 140, 130, 125, 150, 160, 145, 170, 155, 165, 180],
-                    backgroundColor: '#1a3a5c',
-                    borderRadius: 6,
-                },
-                {
-                    label: 'Textile',
-                    data: [80, 90, 85, 95, 88, 100, 95, 110, 105, 115, 120, 130],
-                    backgroundColor: '#f97316',
-                    borderRadius: 6,
-                },
-                {
-                    label: 'BTP',
-                    data: [60, 65, 70, 68, 72, 75, 80, 78, 85, 82, 88, 92],
-                    backgroundColor: '#f43f8e',
-                    borderRadius: 6,
-                }
-            ]
+            labels: filieres,
+            datasets: [{
+                label: "Nombre d'unités",
+                data: productionData,
+                backgroundColor: '#1e3a5f',
+                borderRadius: 6,
+            }]
         },
         options: {
             responsive: true,
             plugins: { legend: { position: 'top' } },
-            scales: { y: { beginAtZero: true } }
+            scales: { y: { beginAtZero: true, title: { display: true, text: 'Nombre d\'unités' } } }
         }
     });
 
@@ -184,8 +202,8 @@
         data: {
             labels: ['Disponible', 'Tension', 'Rupture'],
             datasets: [{
-                data: [65, 25, 10],
-                backgroundColor: ['#1a3a5c', '#f97316', '#f43f8e'],
+                data: [{{ $alertesDisponible }}, {{ $alertesTension }}, {{ $alertesRupture }}],
+                backgroundColor: ['#1e3a5f', '#f97316', '#dc2626'],
                 borderWidth: 0,
             }]
         },

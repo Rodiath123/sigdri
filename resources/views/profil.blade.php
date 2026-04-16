@@ -14,14 +14,14 @@
             <div class="d-flex justify-content-center mb-3">
                 <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold"
                      style="width:90px; height:90px; background:var(--primary); color:white; font-size:36px;">
-                    A
+                    {{ strtoupper(substr(Auth::user()->nom, 0, 1)) }}
                 </div>
             </div>
-            <h5 class="fw-bold mb-0" style="color:var(--primary)">Awa SABI</h5>
-            <p class="text-muted mb-2" style="font-size:13px;">a.sabi@ministere.bj</p>
+            <h5 class="fw-bold mb-0" style="color:var(--primary)">{{ Auth::user()->nom }}</h5>
+            <p class="text-muted mb-2" style="font-size:13px;">{{ Auth::user()->email }}</p>
             <span class="badge rounded-pill mb-3"
                   style="background:#fee2e2; color:#dc2626; font-size:12px;">
-                <i class="bi bi-shield-check me-1"></i>Administrateur
+                <i class="bi bi-shield-check me-1"></i>{{ ucfirst(Auth::user()->role) }}
             </span>
 
             <hr>
@@ -29,11 +29,13 @@
             <div class="text-start">
                 <div class="d-flex justify-content-between mb-2">
                     <small class="text-muted">Dernière connexion</small>
-                    <small class="fw-semibold">Aujourd'hui 08:00</small>
+                    <small class="fw-semibold">
+                        {{ Auth::user()->dernier_connexion ? \Carbon\Carbon::parse(Auth::user()->dernier_connexion)->format('d/m/Y H:i') : 'Première connexion' }}
+                    </small>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
                     <small class="text-muted">Membre depuis</small>
-                    <small class="fw-semibold">Jan 2024</small>
+                    <small class="fw-semibold">{{ Auth::user()->created_at->format('M Y') }}</small>
                 </div>
                 <div class="d-flex justify-content-between">
                     <small class="text-muted">Statut</small>
@@ -51,38 +53,41 @@
                 Informations personnelles
             </h6>
 
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Prénom</label>
-                    <input type="text" class="form-control form-control-sm rounded-3" value="Awa">
+            <form method="POST" action="{{ route('profil.update') }}">
+                @csrf
+                @method('PUT')
+                
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Nom complet</label>
+                        <input type="text" name="nom" class="form-control form-control-sm rounded-3" 
+                               value="{{ old('nom', Auth::user()->nom) }}" required>
+                        @error('nom') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Email</label>
+                        <input type="email" name="email" class="form-control form-control-sm rounded-3" 
+                               value="{{ old('email', Auth::user()->email) }}" required>
+                        @error('email') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Rôle</label>
+                        <input type="text" class="form-control form-control-sm rounded-3" 
+                               value="{{ ucfirst(Auth::user()->role) }}" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Service</label>
+                        <input type="text" class="form-control form-control-sm rounded-3" 
+                               value="{{ Auth::user()->uniteIndustrielle->nom ?? 'Ministère de l\'Industrie' }}" disabled>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-sm rounded-3 fw-semibold"
+                                style="background:var(--secondary); color:white;">
+                            <i class="bi bi-save me-1"></i> Enregistrer les modifications
+                        </button>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Nom</label>
-                    <input type="text" class="form-control form-control-sm rounded-3" value="SABI">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Email</label>
-                    <input type="email" class="form-control form-control-sm rounded-3" value="a.sabi@ministere.bj">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Téléphone</label>
-                    <input type="text" class="form-control form-control-sm rounded-3" value="+229 01 97 00 00 00">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Rôle</label>
-                    <input type="text" class="form-control form-control-sm rounded-3" value="Administrateur" disabled>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">Service</label>
-                    <input type="text" class="form-control form-control-sm rounded-3" value="Ministère de l'Industrie">
-                </div>
-                <div class="col-12">
-                    <button class="btn btn-sm rounded-3 fw-semibold"
-                            style="background:var(--secondary); color:white;">
-                        <i class="bi bi-save me-1"></i> Enregistrer les modifications
-                    </button>
-                </div>
-            </div>
+            </form>
         </div>
 
         <!-- Changer mot de passe -->
@@ -92,35 +97,33 @@
                 Changer le mot de passe
             </h6>
 
-            <div class="row g-3">
-                <div class="col-12">
-                    <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">
-                        Mot de passe actuel
-                    </label>
-                    <input type="password" class="form-control form-control-sm rounded-3"
-                           placeholder="••••••••">
+            <form method="POST" action="{{ route('profil.update') }}">
+                @csrf
+                @method('PUT')
+                
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">
+                            Nouveau mot de passe
+                        </label>
+                        <input type="password" name="password" class="form-control form-control-sm rounded-3"
+                               placeholder="••••••••">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">
+                            Confirmer le mot de passe
+                        </label>
+                        <input type="password" name="password_confirmation" class="form-control form-control-sm rounded-3"
+                               placeholder="••••••••">
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-sm rounded-3 fw-semibold"
+                                style="background:var(--primary); color:white;">
+                            <i class="bi bi-shield-lock me-1"></i> Mettre à jour le mot de passe
+                        </button>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">
-                        Nouveau mot de passe
-                    </label>
-                    <input type="password" class="form-control form-control-sm rounded-3"
-                           placeholder="••••••••">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold" style="font-size:13px; color:var(--primary)">
-                        Confirmer le mot de passe
-                    </label>
-                    <input type="password" class="form-control form-control-sm rounded-3"
-                           placeholder="••••••••">
-                </div>
-                <div class="col-12">
-                    <button class="btn btn-sm rounded-3 fw-semibold"
-                            style="background:var(--primary); color:white;">
-                        <i class="bi bi-shield-lock me-1"></i> Mettre à jour le mot de passe
-                    </button>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
 

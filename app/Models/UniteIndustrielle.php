@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class UniteIndustrielle extends Model
 {
-    protected $fillable = [
-        'nom', 'localisation', 'departement', 'filiere',
-        'capacite_installee', 'regime', 'contact_nom',
-        'contact_telephone', 'contact_email', 'est_actif',
-    ];
+   protected $fillable = [
+    'nom', 'localisation', 'departement', 'filiere', 
+    'capacite_installee', 'regime', 'contact_nom', 
+    'contact_telephone', 'contact_email', 'est_actif'
+]; 
 
     protected $casts = [
         'est_actif' => 'boolean',
